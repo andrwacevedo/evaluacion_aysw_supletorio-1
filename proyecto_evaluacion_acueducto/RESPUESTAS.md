@@ -1,4 +1,4 @@
-# Respuestas de sustentación — **35 % de la nota**
+# Respuestas de sustentación — **30 % de la nota**
 
 ---
 
@@ -61,7 +61,7 @@ Explique a qué se debe, sin adornos.
 
 ---
 
-## 2 · SDD — La ambigüedad que usted encontró *(4 %)*
+## 2 · SDD — La ambigüedad que usted encontró *(3 %)*
 
 El enunciado y el contexto **no dicen todo**. En alguna parte hay algo que se
 puede leer de dos maneras.
@@ -82,7 +82,7 @@ lo otro? Nombre el archivo que sería distinto.
 
 ---
 
-## 3 · SDD — La compuerta que usted se saltó *(3 %)*
+## 3 · SDD — La compuerta que usted se saltó *(2 %)*
 
 `9_checklist.md` se firma **antes** de la primera línea de código.
 
@@ -128,7 +128,7 @@ funcionaría y por qué sigue estando mal.
 
 ---
 
-## 5 · SOLID — El cambio que no debería dolerle *(4 %)*
+## 5 · SOLID — El cambio que no debería dolerle *(3 %)*
 
 La junta consigue un servidor con PostgreSQL y hay que migrar.
 
@@ -242,7 +242,7 @@ quedaría la base.
 
 ---
 
-## 10 · Pruebas — La que pasa y no sirve *(5 %)*
+## 10 · Pruebas — La que pasa y no sirve *(3 %)*
 
 **a.** ¿Qué comprueba **exactamente** la prueba de capas de la Fase 4? Diga qué
 lee y qué busca.

@@ -175,7 +175,7 @@ probó.** Cada una trae **una** comprobación, de un minuto:
 | **5** | Controladores y `Program.cs` | Los **seis endpoints** responden, incluidos el **422** del `PUT` y el **200** del `PATCH` |
 | **6** | El front | La pantalla **lista y crea**, y **sigue en pie con la API apagada** |
 | **7** | Docker: un solo comando | `docker compose up -d --build` **desde cero** levanta los tres servicios |
-| **8** | Cierre | `9_checklist.md` firmado y `RESPUESTAS.md` diligenciado |
+| **8** | Cierre | `9_checklist.md` firmado · `PROMPTS.md` y `RESPUESTAS.md` diligenciados |
 
 **El spec kit va ANTES de la Fase 1**, y también deja su commit.
 **Nueve es el mínimo, no el máximo.**
@@ -188,8 +188,8 @@ probó.** Cada una trae **una** comprobación, de un minuto:
 
 | | |
 |---|---|
-| **Lo que construye** — 65 % | La versión 1 funcionando, y **el rastro de cómo la construyó** |
-| **Lo que sabe explicar** — 35 % | Las respuestas de `RESPUESTAS.md`, **ancladas a su propio código** |
+| **Lo que construye** — 60 % | La versión 1 funcionando, y **el rastro de cómo la construyó** |
+| **Lo que sabe explicar** — 40 % | `RESPUESTAS.md` y `PROMPTS.md`, **anclados a su propio código** |
 
 **El diseño viene resuelto.** El problema, el contexto, el modelo
 entidad-relación, el relacional normalizado y el script **se los entregan
@@ -469,7 +469,7 @@ Controlador  →  Servicio  →  Repositorio  →  SQL Server
 | Docker | El filtro por tipo | **Los commits por fase** |
 | | | **`RESPUESTAS.md`** |
 
-> **`RESPUESTAS.md` vale 35 %.** Un `GET` y un `POST` funcionando con las diez
+> **`RESPUESTAS.md` vale 30 %, y `PROMPTS.md` otro 10 %.** Un `GET` y un `POST` funcionando con las diez
 > preguntas bien respondidas valen más que los seis endpoints con el archivo
 > en blanco.
 
@@ -482,8 +482,44 @@ Controlador  →  Servicio  →  Repositorio  →  SQL Server
 | **El repositorio privado**, con `ccastro2050` invitado | **desde el minuto uno** |
 | El spec kit completo | **Comiteado antes del código** |
 | La API y el front | Lo que alcance, con el orden de §9 |
+| `PROMPTS.md` | **El prompt con el que generó el código**, y qué corrigió |
 | `RESPUESTAS.md` | **Las diez preguntas** |
 | **El historial** | **Mínimo nueve commits, uno por fase** |
+
+---
+
+## 10bis. El `PROMPTS.md` — **el prompt que generó su código**
+
+**Usar IA está permitido y es lo que va a hacer en el trabajo.** Lo que se
+evalúa es que usted pueda **dirigirla y revisarla**.
+
+Por eso se pide **uno solo**: el prompt con el que le **subió los ocho
+documentos del spec kit** y le pidió el código. Ese, el del paso grande — no
+los de cada duda del camino.
+
+En [`PROMPTS.md`](../proyecto_evaluacion_acueducto/PROMPTS.md) van cinco cosas:
+
+| | |
+|---|---|
+| **1** | **Qué le subió**, marcado documento por documento |
+| **2** | **El prompt, literal.** No lo mejore al copiarlo |
+| **3** | Qué devolvió |
+| **4** | **Qué tuvo que corregir, y cómo se dio cuenta** ← el que vale |
+| **5** | Qué le agregaría si lo volviera a lanzar |
+
+> **Lo que no le dio, la IA lo inventó.** Y en este proyecto hay dos casos que
+> se ven de inmediato:
+>
+> - **Sin `6_contracts.md`**, su `DELETE` probablemente devuelve `200` en vez
+>   de `204`.
+> - **Sin `5_data_model.md`**, casi seguro le generó un `DELETE FROM
+>   suscriptor` — porque **el retiro lógico no se deduce del nombre de la
+>   tabla**.
+>
+> **Si no usó IA, escríbalo y explique cómo trabajó.** No resta.
+
+**Corregir no resta: es lo que se evalúa.** El spec kit existe justamente para
+que usted tenga **contra qué comparar** lo que salga.
 
 ---
 
@@ -493,11 +529,12 @@ Controlador  →  Servicio  →  Repositorio  →  SQL Server
 |---|---|---|
 | **Spec kit** | **10 %** | Completo y **antes** del código |
 | **Las tres capas** | **15 %** | La prueba de capas pasa · el servicio no sabe de HTTP |
-| **Los seis endpoints** | **20 %** | `PUT` ≠ `PATCH` · **retiro lógico** · los códigos correctos |
+| **Los seis endpoints** | **17 %** | `PUT` ≠ `PATCH` · **retiro lógico** · los códigos correctos |
 | **Front** | **5 %** | Lista, crea, muestra el error, no se cae |
-| **Docker** | **5 %** | `docker compose up -d --build` desde cero |
+| **Docker** | **3 %** | `docker compose up -d --build` desde cero |
 | **Historial de commits** | **10 %** | **Uno por fase, con lo que probó. Ver §0.2** |
-| **`RESPUESTAS.md`** | **35 %** | **Ancladas a su código, con archivo y línea** |
+| **`PROMPTS.md`** | **10 %** | El prompt literal · qué subió · **y qué tuvo que corregir** |
+| **`RESPUESTAS.md`** | **30 %** | **Ancladas a su código, con archivo y línea** |
 
 ---
 
@@ -509,8 +546,8 @@ Controlador  →  Servicio  →  Repositorio  →  SQL Server
 3. Cree la estructura y copie el script en `db/bdacueducto.sql`.
 4. **Escriba el spec kit completo** y comitéelo. **Ahí se gana o se pierde.**
 5. De ahí: **fase, prueba, commit.** Y si falla, corrección y commit.
-6. Al cerrar, la Fase 8: `9_checklist.md` firmado y `RESPUESTAS.md`
-   diligenciado, **antes de las 6:00 p. m.**.
+6. Al cerrar, la Fase 8: `9_checklist.md` firmado, **`PROMPTS.md`** y
+   `RESPUESTAS.md` diligenciados, **antes de las 6:00 p. m.**.
 
 ---
 
