@@ -1,0 +1,38 @@
+# Tres servicios: sqlserver (11478), la API (8132) y el front (8133).
+# 'docker compose up -d --build' tiene que dejar todo en pie, desde cero.
+#
+# ESTE ARCHIVO ES SUYO: esta a medias a proposito. Complete lo que falta
+# en la Fase 7. El servicio de la base ya esta resuelto para que no pierda
+# tiempo con la contrasena de SQL Server, que es lo que mas se atasca.
+
+services:
+
+  bd:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: acueducto_bd
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Acueducto2026!"
+    ports:
+      - "11478:1433"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'Acueducto2026!' -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  # ---------------------------------------------------------------------
+  # FALTA: el servicio que CARGA db/bdacueducto.sql en la base.
+  #   Pista: un contenedor con las herramientas de sqlcmd, que dependa de
+  #   'bd' con condition: service_healthy, monte ./db y ejecute el script.
+  # ---------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------
+  # FALTA: el servicio de la API.
+  #   build: ./api_acueducto     ports: "8132:8080"
+  #   La cadena de conexion va por variable de entorno, NO en el codigo.
+  # ---------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------
+  # FALTA: el front, en el puerto 8133.
+  # ---------------------------------------------------------------------
