@@ -8,6 +8,7 @@
 | **Carácter** | **Supletorio** |
 | **Fecha** | **sábado 19 de septiembre de 2026** |
 | **Hora** | **de 2:00 p. m. a 6:00 p. m.** |
+| **Modo** | **Remoto**, individual |
 | **Peso** | 20 % |
 | **Stack** | **API en C# / ASP.NET Core sobre SQL Server** · front libre |
 | **Repositorio del estudiante** | `evaluacion_aysw_supletorio`, **privado**, con `ccastro2050` invitado |

@@ -8,6 +8,7 @@
 | **Carácter** | **Supletorio.** Reemplaza la evaluación individual |
 | **Stack** | **API en C# / ASP.NET Core sobre SQL Server** · el **front, en la tecnología que usted quiera** |
 | **Modalidad** | **Individual** |
+| **Modo** | **Remoto**, con conexión |
 | **Peso** | **20 %** |
 | **Fecha** | **sábado 19 de septiembre de 2026** |
 | **Hora** | **de 2:00 p. m. a 6:00 p. m.** |
