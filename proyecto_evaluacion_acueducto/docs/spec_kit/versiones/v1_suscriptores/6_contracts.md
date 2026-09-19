@@ -6,63 +6,108 @@
      SE ALIMENTA DE ..... 5_data_model · RF de esta version · POLITICA_DE_ERRORES
      ------------------------------------------------------------------ -->
 
-# Contratos — Versión {{N}}
+# Contratos — Versión 1
 
-> **Qué es este documento.** Lo que un consumidor puede esperar: rutas, verbos,
-> códigos de estado y formatos **exactos**.
+## 1. La API se documenta sola
 
----
-
-## 1. La API se documenta sola, y eso es parte del contrato
-
-{{Cómo se publica el contrato —OpenAPI, Swagger— y por qué eso **es** un
-requisito y no una comodidad.}}
+Se publica Swagger en `/swagger` en desarrollo. **Es un requisito, no una
+comodidad**: el contrato tiene que poder leerse sin abrir el código.
 
 ## 2. El sobre de error
 
-> Remite a [`POLITICA_DE_ERRORES.md`]({{ruta}}). **No inventa códigos aquí.**
+Remite a [`POLITICA_DE_ERRORES.md`](POLITICA_DE_ERRORES.md). No inventa
+códigos aquí.
 
 | Código | Cuándo | Quién lo produce |
 |---|---|---|
-| {{...}} | {{...}} | {{el framework / el servicio / la base}} |
+| `400 PeticionInvalida` | JSON malformado o tipo incorrecto | ASP.NET Core |
+| `404 NoEncontrado` | El `id` no existe | Servicio |
+| `409 Conflicto` | `numero` ya existe | Servicio (traduce el `UNIQUE`) |
+| `422 ReglaViolada` | Campo obligatorio vacío o `fk_tipo` inexistente | Servicio |
+| `500 ErrorInterno` | Falla no controlada | ASP.NET Core |
 
 ## 3. Los recursos
 
-{{Uno por uno. Verbo, ruta, cuerpo, respuesta, errores.}}
-
-### {{recurso}}
+### `suscriptor`
 
 | Verbo | Ruta | Éxito | Error |
 |---|---|---|---|
-| `GET` | `/api/{{recurso}}` | 200 | — |
+| `GET` | `/api/suscriptores?tipo={codigo}` | `200` | — |
+| `GET` | `/api/suscriptores/{id}` | `200` | `404` |
+| `POST` | `/api/suscriptores` | `201` | `409`, `422` |
+| `PUT` | `/api/suscriptores/{id}` | `200` | `404`, `409`, `422` |
+| `PATCH` | `/api/suscriptores/{id}` | `200` | `404`, `409`, `422` |
+| `DELETE` | `/api/suscriptores/{id}` | `204` | `404` |
 
-## 4. {{El recurso que se sale del patrón}}
+**Cuerpo de `POST` y `PUT`** (`SuscriptorCrear`):
+\`\`\`json
+{
+  "numero": "AC-007",
+  "nombre_titular": "…",
+  "predio": "…",
+  "telefono": "…",
+  "fk_tipo": 1
+}
+\`\`\`
+Todos obligatorios, salvo `telefono`.
 
-{{Sus diferencias, **declaradas**. Si no hay ninguno, borre esta sección y
-diga por qué en §3.}}
+**Cuerpo de `PATCH`** (`SuscriptorActualizar`): todos los campos
+**anulables**. El servicio ignora los ausentes.
+
+**Respuesta de `GET`** (`Suscriptor`):
+\`\`\`json
+{
+  "id_suscriptor": 1,
+  "numero": "AC-001",
+  "nombre_titular": "Rosa Elena Munoz",
+  "predio": "Lote 4, sector alto",
+  "telefono": "3104455667",
+  "fk_tipo": 1,
+  "activo": true
+}
+\`\`\`
+
+### `tipo-suscriptor`
+
+| Verbo | Ruta | Éxito | Error |
+|---|---|---|---|
+| `GET` | `/api/tipos-suscriptor` | `200` | — |
+
+Devuelve `[{ "id_tipo": 1, "codigo": "RES", "nombre": "Residencial", "se_factura": true }, …]`.
+
+## 4. El recurso que se sale del patrón
+
+`suscriptor` con `DELETE` **lógico**. Es el único recurso del contrato donde
+el verbo no describe la operación completa: `DELETE` no borra. Se declara
+explícitamente para que el consumidor no se sorprenda:
+
+> `DELETE /api/suscriptores/{id}` marca `activo = 0`. La fila permanece. El
+> listado de `GET /api/suscriptores` deja de incluirla; `GET
+> /api/suscriptores/{id}` **sigue devolviéndola** con `activo: false`.
 
 ## 5. El contrato de las pantallas
 
-{{Qué dirección tiene cada pantalla y qué hace. Una pantalla también promete.}}
+| Ruta | Qué hace |
+|---|---|
+| `/suscriptores` | Lista los activos. Filtro por tipo en `?tipo=`. Marcador guardable |
+| `/suscriptores/nuevo` | Formulario de creación. Muestra el `422` en pantalla |
+| `/suscriptores/{id}` | Detalle y edición. Botón "Retirar" |
 
 ## 6. Lo que un consumidor debe saber antes de integrarse
 
-{{Lo que no se deduce del contrato: límites, formatos de fecha, qué pasa con
-los inactivos.}}
+- **Formato de fecha:** `fecha_toma` va como `YYYY-MM-DD`. `periodo` va como
+  `AAAA-MM`.
+- **El `numero` retirado no se libera.** Si se intenta reusar, `409`.
+- **Los inactivos no aparecen en el listado**, pero sí en la consulta
+  individual.
+- **El `PATCH` con cuerpo vacío** `{}` responde `200` sin cambios. No es un
+  error: no pidió cambiar nada.
 
 ---
 
 ## Criterio de cierre
 
-- [ ] Cada `RF-nn` de `2_spec` tiene su ruta aquí
-- [ ] El contraste entre **reemplazo completo** y **cambio parcial** está dicho
-- [ ] Los códigos de error **citan** la política, no la reinventan
-- [ ] Cada pantalla tiene una dirección **que se puede guardar como marcador**
-
-## Errores típicos
-
-| Error | Cómo se ve |
-|---|---|
-| Inventar códigos por versión | Cada versión responde distinto al mismo error |
-| Rutas con el nombre de la tabla como parámetro | El contrato no puede describir nada |
-| Olvidar el contrato del front | «Una versión incluye su front» deja de cumplirse |
+- [x] Cada `RF-nn` de `2_spec` tiene su ruta aquí
+- [x] El contraste entre `PUT` (reemplazo completo) y `PATCH` (parcial) está dicho
+- [x] Los códigos de error citan la política
+- [x] Cada pantalla tiene una dirección guardable como marcador

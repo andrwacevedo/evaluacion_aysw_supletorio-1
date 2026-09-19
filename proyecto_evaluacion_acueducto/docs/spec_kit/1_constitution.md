@@ -10,163 +10,242 @@
      proyecto, y todas las versiones la heredan. Va en docs/spec_kit/,
      no dentro de la carpeta de una version.
      ------------------------------------------------------------------ -->
-
-# Constitución del proyecto — {{NOMBRE DEL PROYECTO}}
-
-> **Qué es este documento.** Lo que **no se negocia** mientras dure el
-> proyecto. No dice qué hace el sistema —eso es `2_spec`, y cambia en cada
-> versión—: dice **bajo qué reglas se construye**.
->
-> **Es una política, no una especificación.** Por eso no se reescribe por
-> versión: se **enmienda**, y la enmienda deja rastro.
+# Constitución del proyecto — Junta de Acueducto Veredal
 
 | | |
 |---|---|
-| **Versión de este documento** | {{1.0}} |
-| **Fecha** | {{dd/mm/aaaa}} |
-| **Enmiendas** | {{ninguna todavía}} |
+| **Versión de este documento** | 1.0 |
+| **Fecha** | 19/09/2026 |
+| **Enmiendas** | ninguna todavía |
 
 ---
 
 ## Cómo se lee esta constitución
 
-Cada artículo dice **tres** cosas, y si le falta una no sirve:
-
-1. **La regla**, en una frase.
-2. **Por qué**, de forma que se pueda discutir — no «porque sí».
-3. **Cómo se comprueba**, con un comando o una observación concreta.
-
-> **Un artículo sin comprobación es una intención.** Y las intenciones no se
-> verifican en la compuerta 2.
+Cada artículo dice **tres** cosas: la regla, el porqué y cómo se comprueba.
+Un artículo sin comprobación es una intención.
 
 ---
 
-## Artículo 1 — {{Cómo se construye: por versiones, y la especificación manda}}
+## Artículo 1 — Se construye por versiones, y la especificación manda
 
-**La regla.** {{...}}
+**La regla.** Ninguna versión empieza a codificarse hasta que su spec kit
+está completo y comiteado. El código sigue a la especificación, no al revés.
 
-**Por qué.** {{...}}
+**Por qué.** La evaluación se lee en el historial de Git. Un spec kit
+posterior al código no se distingue de una justificación escrita a las 5:55.
 
-**Cómo se comprueba.** {{...}}
+**Cómo se comprueba.** `git log --oneline` muestra los commits del spec kit
+**antes** del primer commit que toca un archivo `.cs`.
 
-> {{Si el proyecto versiona back y front juntos, dígalo AQUÍ y como artículo
-> propio. Es la regla que más se rompe sin querer.}}
+---
 
-## Artículo 2 — {{El stack}}
+## Artículo 2 — El stack
 
-{{Lenguaje, framework, motor de base de datos, y **qué se ve y qué se esconde**.
-Si se decidió no usar un ORM, o usarlo, va aquí con su porqué.}}
+**La regla.** API en **C# / ASP.NET Core** sobre **SQL Server 2022**. El
+front, en la tecnología que se elija (React, Vue, Razor, HTML+JS). La
+persistencia se hace con **ADO.NET / Microsoft.Data.SqlClient**. No se usa
+Entity Framework ni otro ORM.
 
-## Artículo 3 — {{La arquitectura}}
+**Por qué.** El ejercicio pide ver las consultas parametrizadas en el
+repositorio. Un ORM las esconde y con ellas la capa que se evalúa.
 
-{{Las capas y las interfaces. Remite a `ARQUITECTURA.md`, no lo repite.}}
+**Cómo se comprueba.** `grep -r "EntityFramework" api_acueducto/` devuelve
+vacío. `grep -rn "SqlConnection\|SqlCommand" api_acueducto/` devuelve las
+consultas de la capa de repositorio, y solo de ahí.
 
-**Cómo se comprueba.** {{La prueba que corre sin el motor de base de datos, o
-la búsqueda que tiene que devolver vacío.}}
+---
 
-## Artículo 4 — {{Cómo se levanta}}
+## Artículo 3 — La arquitectura son tres capas, y el servicio no conoce HTTP
 
-{{Un solo comando, cuántos procesos, qué puertos.}}
+**La regla.** `Controlador → Servicio → Repositorio → SQL Server`. El
+controlador no escribe SQL. El servicio no menciona HTTP. El repositorio no
+decide reglas de negocio. El detalle vive en `ARQUITECTURA.md`.
 
-## Artículo 5 — {{De dónde viene el esquema de datos}}
+**Por qué.** Es lo que permite cambiar SQL Server por PostgreSQL sin tocar
+controladores ni servicios. Es también lo que hace la prueba de capas
+posible.
 
-{{¿Se diseña aquí o viene dado? Si viene dado, **no se modifica**, y eso hay
-que escribirlo.}}
+**Cómo se comprueba.** La prueba de la Fase 4 pasa: ningún archivo bajo
+`Servicios/` contiene `IActionResult`, `Controller`, `Http`, `StatusCodes`
+ni `200`/`404` literales.
 
-## Artículo 6 — {{Qué pasa cuando algo se borra}}
+---
 
-{{Borrado lógico o físico. Si es lógico: qué pasa con los valores únicos de lo
-retirado. Esa consecuencia sorprende y conviene decirla aquí.}}
+## Artículo 4 — El sistema se levanta con un solo comando
 
-## Artículo 7 — {{Los secretos}}
+**La regla.** `docker compose up -d --build`, desde cero, deja en pie los
+tres servicios: base, API y front. Sin instalar nada a mano en la máquina.
 
-{{Dónde viven las credenciales. **Nunca en el repositorio**, y cómo se
-comprueba.}}
+**Por qué.** El enunciado lo pide explícitamente en la Fase 7 y es lo que
+distingue un proyecto entregable de uno que solo corre en el portátil de
+quien lo escribió.
 
-## Artículo 7.1 — {{Los requisitos no funcionales}}
+**Cómo se comprueba.** Se corre el comando en una máquina limpia, se espera
+a que los tres contenedores estén `healthy` y se hace
+`GET http://localhost:8132/api/suscriptores` → `200` con seis filas.
 
-> **Los transversales viven en su catálogo y este artículo los hace
-> obligatorios.** No se copian aquí: se citan.
+---
 
-**Rigen siempre:** `RNF-{{nn}}`, `RNF-{{nn}}`, … de
-[`REQUISITOS_NO_FUNCIONALES.md`]({{ruta}}).
+## Artículo 5 — El esquema de datos viene dado y no se modifica
 
-## Artículo 8 — {{Datos personales}}
+**La regla.** `db/bdacueducto.sql` se entrega hecho. Las tres tablas, sus
+restricciones y los datos de prueba **no se alteran**. Si algo del código
+necesita un cambio en el esquema, es una enmienda a esta constitución, no
+una edición del script.
 
-{{Qué datos pueden entrar al repositorio y cuáles no.}}
+**Por qué.** El ejercicio evalúa la construcción sobre el modelo, no su
+diseño. Tocar el esquema invalida la comparación con el enunciado.
 
-> **Y si la respuesta es «ninguno», el artículo tiene que explicar por qué no
-> basta con que el repositorio sea privado.** La visibilidad se cambia con un
-> clic y el clic no revisa el historial.
+**Cómo se comprueba.** `git diff db/bdacueducto.sql` sobre el commit inicial
+devuelve vacío durante toda la versión.
 
-## Artículo 9 — {{El idioma, y que el código sustente sus decisiones}}
+---
 
-{{En qué idioma se escribe todo, y qué se espera de los comentarios: no qué
-hace la línea, sino **por qué está**.}}
+## Artículo 6 — Nada se borra: se retira
 
-## Artículo 9.1 — {{La identidad visual}}
+**La regla.** El `DELETE` de `suscriptor` es **retiro lógico**: marca
+`activo = 0`. Ningún repositorio emite `DELETE FROM` sobre `suscriptor`,
+`tipo_suscriptor` ni `lectura`.
 
-{{Si hay manual de marca, esto lo convierte en **restricción** y no en
-preferencia. Remite a `MANUAL_DE_MARCA.md`.}}
+**Por qué.** La historia 4 y la cita `12:30` lo dicen: hay que poder
+responder por el consumo de un predio en 2024 aunque el titular se haya
+retirado. Y el `numero` sigue ocupando su `UNIQUE`, lo que es correcto.
 
-## Artículo 10 — {{Los contratos}}
+**Cómo se comprueba.** `grep -rn "DELETE FROM" api_acueducto/` devuelve
+vacío. Y tras `DELETE /api/suscriptores/1`, la fila sigue en la base con
+`activo = 0`.
 
-{{Qué tan exactos: verbos, rutas, códigos de estado, formatos. Remite a
-`POLITICA_DE_ERRORES.md` para los códigos.}}
+---
 
-## Artículo 10.1 — {{La decisión de diseño que define el proyecto}}
+## Artículo 7 — Los secretos viven fuera del repositorio
 
-{{Aquí va la decisión grande —la que si alguien la cambia, cambia el proyecto—.
-Con su porqué **y con la excepción**, para que no sea dogma.}}
+**La regla.** La cadena de conexión, la contraseña de SQL Server y cualquier
+credencial llegan por variable de entorno. **Nunca** están versionadas.
 
-> **Escriba también qué NO prohíbe este artículo.** Un artículo sin su límite
-> se aplica donde no debía.
+**Por qué.** El repositorio es privado, pero la visibilidad se cambia con un
+clic y el clic no revisa el historial. Un secreto comiteado queda en el
+historial para siempre.
 
-## Artículo 11 — {{Las convenciones fijas}}
+**Cómo se comprueba.** `grep -rn "Password=\|Acueducto2026" api_acueducto/`
+devuelve vacío. La cadena aparece solo en `docker-compose.yml` como
+`${CONEXION_BD}` o equivalente, y en `.env.example` con valor ficticio.
 
-{{Nombres de archivos, de carpetas, de ramas. Lo aburrido que evita discusiones
-semanales.}}
+---
+
+## Artículo 7.1 — Los requisitos no funcionales rigen siempre
+
+**Rigen** `RNF-01` a `RNF-06` de
+[`REQUISITOS_NO_FUNCIONALES.md`](REQUISITOS_NO_FUNCIONALES.md).
+
+---
+
+## Artículo 8 — Ninguna persona real entra al repositorio
+
+**La regla.** Ni en la base, ni en los datos de prueba, ni en capturas, ni
+en el README. Los correos usan `@example.com`. Los teléfonos son ficticios.
+Los nombres, inventados.
+
+**Por qué.** Que el repositorio sea privado no basta: la visibilidad cambia
+con un clic y el historial no se reescribe solo.
+
+**Cómo se comprueba.** `grep -rE "[0-9]{7,}" docs/ api_acueducto/` no
+devuelve teléfonos reales; todos los datos coinciden con los del script
+entregado.
+
+---
+
+## Artículo 9 — Todo en español, y el código sustenta sus decisiones
+
+**La regla.** Código, comentarios, documentación y pantallas en español. Los
+comentarios explican **por qué** está la línea, no qué hace.
+
+**Por qué.** El dominio es una junta veredal. La jerga técnica en pantalla
+es ruido para quien la usa.
+
+**Cómo se comprueba.** Ninguna pantalla muestra `null`, `undefined`,
+`exception`, `error 422` sin traducir. Los comentarios del repositorio
+responden a "por qué", no a "qué".
+
+---
+
+## Artículo 9.1 — Identidad visual
+
+No aplica: el enunciado no entrega manual de marca y el front es libre. Si
+en una versión futura se entrega, se enmienda esta constitución.
+
+---
+
+## Artículo 10 — Los contratos son exactos
+
+**La regla.** Verbos, rutas, cuerpos, códigos de estado y formatos están
+fijados en `6_contracts.md`. Los códigos de error se citan de
+[`POLITICA_DE_ERRORES.md`](POLITICA_DE_ERRORES.md); no se reinventan por
+versión.
+
+**Por qué.** Un contrato que cambia por versión no es un contrato. Un `200`
+donde el enunciado pide `204` es una promesa rota.
+
+**Cómo se comprueba.** Los seis endpoints responden con el código exacto
+del contrato. La prueba manual de `7_quickstart.md` lo verifica.
+
+---
+
+## Artículo 10.1 — `PUT` y `PATCH` no comparten clase de petición
+
+**La regla.** El cuerpo del `PUT` exige **todos** los campos. El cuerpo del
+`PATCH` acepta **algunos**. Se modelan con clases distintas:
+`SuscriptorCrear` y `SuscriptorActualizar`.
+
+**Por qué.** Son dos promesas distintas al consumidor. Un `PATCH` que exige
+todos los campos es un `PUT` mal escrito; un `PUT` que acepta algunos es un
+`PATCH` mal etiquetado. Compartir la clase garantiza que uno de los dos esté
+mal.
+
+**Cómo se comprueba.** El `PATCH /api/suscriptores/3` con
+`{"telefono":"3004455"}` responde `200`. El mismo cuerpo contra `PUT`
+responde `422`.
+
+> **Lo que este artículo NO prohíbe.** No prohíbe que `SuscriptorCrear` y
+> `SuscriptorActualizar` compartan **campos**; prohíbe que compartan
+> **clase**. Tampoco prohíbe un `Suscriptor` de lectura que las contenga a
+> ambas.
+
+---
+
+## Artículo 11 — Convenciones fijas
+
+**La regla.**
+- Ramas: `main` única, commits directos (es evaluación individual).
+- Carpetas: `api_acueducto/{Controladores,Servicios,Repositorios,Modelos,Peticiones}`.
+- Archivos: PascalCase para clases, prefijo `I` para interfaces.
+- Commits: `Fase N — <título>\n\n<cuerpo con lo que se probó>`.
+
+**Cómo se comprueba.** `git log --oneline` muestra el prefijo de fase en cada
+commit. `ls api_acueducto/` coincide con la estructura declarada.
+
+---
 
 ## Artículo 12 — Cómo se enmienda esta constitución
 
-{{Quién puede, con qué procedimiento, y **dónde queda el rastro**.}}
+**La regla.** Una enmienda se hace por commit con mensaje
+`enmienda: art-N — <razón>`, en `main`, antes de aplicar el cambio que la
+motiva. El artículo enmendado conserva su número; la enmienda se anota en la
+cabecera.
 
-> **Una constitución que se cambia en silencio no es una constitución.** Si un
-> artículo deja de cumplirse, o se enmienda con su fecha y su razón, o se
-> incumple — y entonces la compuerta 2 tiene que detectarlo.
+**Por qué.** Una constitución que se cambia en silencio no es una
+constitución. Un artículo que deja de cumplirse o se enmienda con fecha y
+razón, o se incumple y la compuerta 2 tiene que verlo.
 
----
-
-## Criterio de cierre de este documento
-
-- [ ] **Cada artículo tiene sus tres partes**: regla, porqué y comprobación
-- [ ] Ningún artículo dice **qué hace** el sistema — eso es `2_spec`
-- [ ] Los requisitos no funcionales transversales se **citan**, no se copian
-- [ ] El artículo de la decisión grande dice **también qué NO prohíbe**
-- [ ] Existe el artículo de enmienda, y dice **dónde queda el rastro**
-
-## Errores típicos
-
-| Error | Cómo se ve |
-|---|---|
-| **Meter aquí lo que hace el sistema** | El artículo cambia en la siguiente versión — y entonces no era una política |
-| **Artículo sin comprobación** | «El código debe ser mantenible». Nadie lo verifica nunca |
-| **Copiar aquí los requisitos no funcionales** | Dos verdades que se separan |
-| **Enmendar en silencio** | Un artículo deja de cumplirse y nadie lo nota hasta la auditoría |
-| **Dogma sin excepción** | El artículo se aplica donde no debía, y nadie se atreve a discutirlo |
+**Cómo se comprueba.** La tabla de la cabecera tiene una fila por enmienda,
+con fecha y motivo.
 
 ---
 
-## Lo que esta plantilla ya trae decidido, y usted puede heredar
+## Criterio de cierre
 
-Estos artículos son **casi iguales en cualquier proyecto** de este curso.
-Cópielos y ajústelos, en vez de escribirlos de cero:
-
-| Artículo | La regla, ya redactada |
-|---|---|
-| **SQL parametrizado** | *Todo valor que entre a una consulta va como parámetro. Nunca se concatena.* **Comprobación:** ninguna interpolación de valor en los repositorios |
-| **Borrado lógico** | *Nada se borra: se marca inactivo. Los listados filtran.* **Comprobación:** cero `DELETE FROM` en los repositorios |
-| **Secretos fuera** | *Ninguna credencial versionada; llegan por variables de entorno.* **Comprobación:** cero cadenas de conexión en el código |
-| **Sin datos personales** | *Ninguna persona real, ni en la base ni en el repositorio.* **Comprobación:** los correos usan un dominio de ejemplo |
-| **Todo en español** | *Código, comentarios, documentación y pantallas.* **Comprobación:** ninguna pantalla muestra jerga técnica al usuario |
-| **Un solo comando** | *El sistema se levanta desde cero con un comando, sin instalar nada.* **Comprobación:** correrlo en una máquina limpia |
+- [x] Cada artículo tiene regla, porqué y comprobación
+- [x] Ningún artículo dice qué hace el sistema
+- [x] Los RNF se citan, no se copian
+- [x] El artículo 10.1 dice también qué NO prohíbe
+- [x] Existe el artículo de enmienda y dice dónde queda el rastro
