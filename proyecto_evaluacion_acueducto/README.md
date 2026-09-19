@@ -18,11 +18,10 @@
 
 > ### Cree el repositorio **privado** e invite a **`ccastro2050`**
 >
-> No es el primer paso del trabajo: **es el requisito para empezar.**
+> Es lo primero, y toma dos minutos. Como el repositorio es privado, la
+> invitación es lo único que me permite ver su trabajo.
 >
-> Si el repositorio es privado y yo no estoy invitado, **no puedo abrirlo**, y
-> a las 6:00 p. m. no hay nada que calificar. En las evaluaciones anteriores
-> esto pasó, y no hubo nota que poner.
+> Déjelo resuelto al empezar y se olvida del tema.
 
 **Los cuatro pasos están detallados en la
 [PARTE 0 del enunciado](EVALUACION_INDIVIDUAL.md).** Incluye el

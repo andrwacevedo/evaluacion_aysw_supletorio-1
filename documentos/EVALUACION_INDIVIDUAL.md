@@ -52,11 +52,10 @@
 3. Escriba exactamente: **`ccastro2050`**
 4. **Add to this repository**
 
-> **Esto se hace AHORA, no al final.** Si su repositorio es privado y yo no
-> estoy invitado, **yo no puedo abrirlo**, y a las 6:00 p. m. no hay nada que
-> calificar. No es rigor: es que literalmente no veo nada.
+> **Hágalo ahora, no al final.** Es lo único que necesito para poder ver su
+> trabajo: como el repositorio es privado, sin la invitación no me aparece.
 >
-> **En las evaluaciones anteriores esto pasó, y no hubo nota que poner.**
+> Déjelo resuelto al empezar y se olvida del tema.
 
 ### Paso 3 · Conecte su carpeta y haga el primer `push`
 
@@ -558,7 +557,7 @@ que usted tenga **contra qué comparar** lo que salga.
 
 | Lo que pasó | Lo que costó |
 |---|---|
-| **No invitó a `ccastro2050`** | **Entrega inexistente.** No hubo nota que poner |
+| **No invitó a `ccastro2050`** | El repositorio quedó cerrado y no se pudo revisar |
 | **Un solo commit, faltando cinco minutos** | Los 10 puntos del historial, y las preguntas sin nada que citar |
 | **Commits que decían «avance», «cambios»** | No se pudo saber qué hizo en qué momento |
 | **`PUT` y `PATCH` con la misma clase** | Se perdió el punto de los verbos en casi todos |
